@@ -30,6 +30,7 @@ module snake_device (
 	parameter CELLS_WIDTH = 32;
 	parameter CELLS_HEIGHT = 32;
 	parameter LFSR_DEPTH = $clog2(CELLS_WIDTH*CELLS_HEIGHT);
+	parameter LFSR_INIT = 3'hC75;
 	parameter MAX_7SEG = $clog2(9999);
 	
 	wire w_SnakeClk;
@@ -66,8 +67,10 @@ module snake_device (
 	lfsr
 	#(
 		.DEPTH(LFSR_DEPTH)
+		.INIT(
 	) random_cell_generator (
 		.i_Clk(i_Clk),
+		.i_Rst(i_Rst),
 		.o_Data(r_RNG)
 	);
 	
