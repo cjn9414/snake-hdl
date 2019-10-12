@@ -35,11 +35,11 @@ module snake_device (
 	
 	wire w_SnakeClk;
 	
-	reg [LFSR_DEPTH-1:0] r_Food;
-	reg r_GameOver;
-	reg [LFSR_DEPTH-1:0] r_RNG;
-	reg [(CELLS_WIDTH+1 * CELLS_HEIGHT+1)-1:0] r_SnakeGrid;
-	reg [MAX_7SEG:0] r_Score;
+	reg [LFSR_DEPTH-1:0] r_Food = 0;
+	reg r_GameOver = 0;
+	reg [LFSR_DEPTH-1:0] r_RNG = 0;
+	reg [(CELLS_WIDTH+1 * CELLS_HEIGHT+1)-1:0] r_SnakeGrid = 0;
+	reg [MAX_7SEG:0] r_Score = 0;
 	
 	signal_generator
 	#( 
@@ -53,11 +53,15 @@ module snake_device (
 	
 	snake_game
 	#(
+		.c_GRID_IDX_SIZE(LFSR_DEPTH),
+		.c_WIDTH(CELLS_WIDTH),
+		.c_HEIGHT(CELLS_HEIGHT)
 	) game_logic (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
 		.i_SnakeClk(w_SnakeClk),
 		.i_Direction(i_Direction),
+		.i_FoodLocation(r_RNG),
 		.o_Kill(r_GameOver),
 		.o_Grid(r_SnakeGrid),
 		.o_Food(r_Food),

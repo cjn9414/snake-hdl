@@ -21,7 +21,7 @@ module snake_scoreboard
 	parameter SCORE_WIDTH = 14;
 	
 	wire [27:0] w_Segments;
-	reg [3:0] r_SegmentSelect;
+	reg [3:0] r_SegmentSelect = 0;
 	integer r_Score;
 	integer idx;
 	

@@ -25,7 +25,7 @@ I have a rough idea going in to this project of how it will be implemented. Here
 * The seven-segment display on the FPGA board will be used to maintain the score of the user.
 
 ## Status
-This project has yet to be started. I can't be sure when it will be started, as I have many active projects. I mainly wanted the notes above documented so that when I get around to this project I know where to start. I don't anticipate this project being too much of a time commitment. I would expect it to be operational in maybe a weekend or two of work. This timeframe may change depending on how competent I am with Verilog at the time of start.
+This project is just getting started. I can't be sure when I will kick this project into full gear, as I have many active projects. I mainly wanted the notes above documented so that when I get around to pursuing this project I know what can be done. I don't anticipate this project being too much of a time commitment. I would expect it to be operational in maybe a weekend or two of work. This timeframe may change depending on how competent I am with Verilog at the time of start.
 
 ## Future
 As of right now, I don't expect to continue this project much further than the imagined end result. This is more of a quick and fun project!
