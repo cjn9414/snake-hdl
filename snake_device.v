@@ -14,7 +14,7 @@
 module snake_device (
 	input wire i_Clk,
 	input wire i_Rst,
-	input [3:0] i_Direction,
+	input wire [3:0] i_Direction,
 	output wire [23:0] o_ScoreDisplay,
 	output wire [3:0] o_Red,
 	output wire [3:0] o_Green,
@@ -40,6 +40,7 @@ module snake_device (
 	reg [LFSR_DEPTH-1:0] r_RNG = 0;
 	reg [(CELLS_WIDTH+1 * CELLS_HEIGHT+1)-1:0] r_SnakeGrid = 0;
 	reg [MAX_7SEG:0] r_Score = 0;
+	reg [3:0] r_Direction = 0;
 	
 	signal_generator
 	#( 
@@ -60,7 +61,7 @@ module snake_device (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
 		.i_SnakeClk(w_SnakeClk),
-		.i_Direction(i_Direction),
+		.i_Direction(r_Direction),
 		.i_FoodLocation(r_RNG),
 		.o_Kill(r_GameOver),
 		.o_Grid(r_SnakeGrid),
@@ -88,9 +89,9 @@ module snake_device (
 	
 	snake_to_vga
 	#(
-		.WIDTH(DISPLAY_WIDTH),
-		.HEIGHT(DISPLAY_HEIGHT),
-		.VGA_POLARITY(VGA_POLARITY)
+		.c_WIDTH(DISPLAY_WIDTH),
+		.c_HEIGHT(DISPLAY_HEIGHT),
+		.c_VGA_POLARITY(VGA_POLARITY)
 	) vga_wrapper (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
@@ -110,6 +111,13 @@ module snake_device (
 	) score_wrapper (
 		.i_Score(r_Score),
 		.o_ScoreDisplay(o_ScoreDisplay)
+	);
+	
+	Basys3_button_debouncer
+	#(
+	) direction_debouncer (
+		.i_Switches(i_Direction),
+		.o_Switches(r_Direction)
 	);
 	
 endmodule
