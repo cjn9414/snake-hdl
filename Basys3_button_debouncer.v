@@ -14,9 +14,9 @@
 
 module Basys3_button_debouncer 
 	(
-		input wire i_Clk,
-		input wire [3:0] i_Buttons,
-		output wire [3:0] o_Buttons
+		input i_Clk,
+		input [3:0] i_Buttons,
+		output [3:0] o_Buttons
 	);
 	
 	// Target clock frequency

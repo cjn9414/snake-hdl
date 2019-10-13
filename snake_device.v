@@ -4,7 +4,7 @@
 // Module : snake_device
 // Author : Carter Nesbitt
 // Created : 15 September 2019
-// Modified : 15 September 2019
+// Modified : 12 October 2019
 // 
 // Language : Verilog 
 // Description : High level module for the classic snake game
@@ -12,21 +12,21 @@
 // --------------------------------------------------------------------------
 
 module snake_device (
-	input wire i_Clk,
-	input wire i_Rst,
-	input wire [3:0] i_Direction,
-	output wire [23:0] o_ScoreDisplay,
+	input i_Clk,
+	input i_Rst,
+	input [3:0] i_Direction,
+	output wire [6:0] o_ScoreDisplay,
 	output wire [3:0] o_Red,
 	output wire [3:0] o_Green,
 	output wire [3:0] o_Blue,
 	output wire o_HSync,
-	output wire o_VSync
+	output wire o_VSync,
+	output wire [3:0] o_SegmentSelect
 );
 	parameter CLK_FREQ = 106470000;
 	parameter REFRESH_RATE = 20;
 	parameter DISPLAY_WIDTH = 1440;
 	parameter DISPLAY_HEIGHT = 900;
-	parameter VGA_POLARITY = 1'b0;
 	parameter CELLS_WIDTH = 32;
 	parameter CELLS_HEIGHT = 32;
 	parameter LFSR_DEPTH = $clog2(CELLS_WIDTH*CELLS_HEIGHT);
@@ -34,39 +34,38 @@ module snake_device (
 	parameter MAX_7SEG = $clog2(9999);
 	
 	wire w_SnakeClk;
+	wire w_GameOver;
+	wire [MAX_7SEG-1:0] w_Score;
+
+	wire [LFSR_DEPTH-1:0] w_Food;
+	wire [LFSR_DEPTH-1:0] w_RNG;
+	wire [(CELLS_WIDTH+1) * (CELLS_HEIGHT+1)-1:0] w_SnakeGrid;
+	wire [3:0] w_Direction;
 	
-	reg [LFSR_DEPTH-1:0] r_Food = 0;
-	reg r_GameOver = 0;
-	reg [LFSR_DEPTH-1:0] r_RNG = 0;
-	reg [(CELLS_WIDTH+1 * CELLS_HEIGHT+1)-1:0] r_SnakeGrid = 0;
-	reg [MAX_7SEG:0] r_Score = 0;
-	reg [3:0] r_Direction = 0;
-	
-	signal_generator
-	#( 
-		.pol(VGA_POLARITY)
-	) vga_signal (
+		
+	clock_divider
+	#(
+		.DIV(CLK_FREQ / REFRESH_RATE)
+	) clk_to_snake (
 		.i_clk(i_Clk),
-		.i_rst(i_Rst),
-		.o_h_sync(o_HSync),
-		.o_v_sync(o_VSync)
+		.o_clk(w_SnakeClk)
 	);
 	
 	snake_game
 	#(
-		.c_GRID_IDX_SIZE(LFSR_DEPTH),
+		.c_GRID_IDX_SZ(LFSR_DEPTH),
 		.c_WIDTH(CELLS_WIDTH),
 		.c_HEIGHT(CELLS_HEIGHT)
 	) game_logic (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
 		.i_SnakeClk(w_SnakeClk),
-		.i_Direction(r_Direction),
-		.i_FoodLocation(r_RNG),
-		.o_Kill(r_GameOver),
-		.o_Grid(r_SnakeGrid),
-		.o_Food(r_Food),
-		.o_Score(r_Score)
+		.i_Direction(w_Direction),
+		.i_FoodLocation(w_RNG),
+		.o_Kill(w_GameOver),
+		.o_SnakeGrid(w_SnakeGrid),
+		.o_Food(w_Food),
+		.o_Score(w_Score)
 	);
 	
 	lfsr
@@ -76,28 +75,22 @@ module snake_device (
 	) random_cell_generator (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
-		.o_Data(r_RNG)
-	);
-	
-	clock_divider
-	#(
-		.DIV(CLK_FREQ / REFRESH_RATE)
-	) clk_to_snake (
-		.i_clk(i_Clk),
-		.o_clk(w_SnakeClk)
+		.o_Data(w_RNG)
 	);
 	
 	snake_to_vga
 	#(
-		.c_WIDTH(DISPLAY_WIDTH),
-		.c_HEIGHT(DISPLAY_HEIGHT),
-		.c_VGA_POLARITY(VGA_POLARITY)
+		.c_WIDTH(CELLS_WIDTH),
+		.c_HEIGHT(CELLS_HEIGHT),
+		.c_GRID_IDX_SZ(LFSR_DEPTH),
+		.c_SCREEN_WIDTH(DISPLAY_WIDTH),
+		.c_SCREEN_HEIGHT(DISPLAY_HEIGHT)
 	) vga_wrapper (
 		.i_Clk(i_Clk),
 		.i_Rst(i_Rst),
-		.i_GameOver(r_GameOver),
-		.i_SnakeGrid(r_SnakeGrid),
-		.i_Food(r_Food),
+		.i_GameOver(w_GameOver),
+		.i_SnakeGrid(w_SnakeGrid),
+		.i_Food(w_Food),
 		.o_Red(o_Red),
 		.o_Green(o_Green),
 		.o_Blue(o_Blue),
@@ -109,15 +102,18 @@ module snake_device (
 	#(
 	   .SCORE_WIDTH(MAX_7SEG)
 	) score_wrapper (
-		.i_Score(r_Score),
-		.o_ScoreDisplay(o_ScoreDisplay)
+		.i_Clk(i_Clk),
+		.i_Score(w_Score),
+		.o_ScoreDisplay(o_ScoreDisplay),
+		.o_SegmentSelect(o_SegmentSelect)
 	);
 	
 	Basys3_button_debouncer
 	#(
 	) direction_debouncer (
-		.i_Switches(i_Direction),
-		.o_Switches(r_Direction)
+		.i_Clk(i_Clk),
+		.i_Buttons(i_Direction),
+		.o_Buttons(w_Direction)
 	);
 	
 endmodule
