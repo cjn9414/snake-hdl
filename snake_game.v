@@ -14,7 +14,6 @@ module snake_game
 	(
 		i_Clk,
 		i_Rst,
-		i_SnakeClk,
 		i_Direction,
 		i_FoodLocation,
 		o_Kill,
@@ -35,7 +34,6 @@ module snake_game
 	input [c_GRID_IDX_SZ-1:0] i_FoodLocation;
 	input i_Clk;
 	input i_Rst;
-	input i_SnakeClk;
 	input [3:0] i_Direction;
 	output reg o_Kill;
 	output reg [(c_WIDTH+1)*(c_HEIGHT+1)-1:0] o_SnakeGrid = 0;

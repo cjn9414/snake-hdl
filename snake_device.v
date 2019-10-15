@@ -24,14 +24,14 @@ module snake_device (
 	output wire [3:0] o_SegmentSelect
 );
 	parameter CLK_FREQ = 106470000;
-	parameter REFRESH_RATE = 20;
+	parameter REFRESH_RATE = 1;
 	parameter DISPLAY_WIDTH = 1440;
 	parameter DISPLAY_HEIGHT = 900;
 	parameter CELLS_WIDTH = 32;
 	parameter CELLS_HEIGHT = 32;
 	parameter LFSR_DEPTH = $clog2(CELLS_WIDTH*CELLS_HEIGHT);
 	parameter LFSR_INIT = 12'hC75;
-	parameter MAX_7SEG = $clog2(9999);
+	parameter MAX_7SEG = 16;
 	
 	wire w_SnakeClk;
 	wire w_GameOver;
@@ -42,6 +42,7 @@ module snake_device (
 	wire [(CELLS_WIDTH+1) * (CELLS_HEIGHT+1)-1:0] w_SnakeGrid;
 	wire [3:0] w_Direction;
 	
+	localparam TEST_7SEG = 'd1234;
 		
 	clock_divider
 	#(
@@ -57,9 +58,8 @@ module snake_device (
 		.c_WIDTH(CELLS_WIDTH),
 		.c_HEIGHT(CELLS_HEIGHT)
 	) game_logic (
-		.i_Clk(i_Clk),
+		.i_Clk(w_SnakeClk),
 		.i_Rst(i_Rst),
-		.i_SnakeClk(w_SnakeClk),
 		.i_Direction(w_Direction),
 		.i_FoodLocation(w_RNG),
 		.o_Kill(w_GameOver),
@@ -102,8 +102,8 @@ module snake_device (
 	#(
 	   .SCORE_WIDTH(MAX_7SEG)
 	) score_wrapper (
-		.i_Clk(i_Clk),
-		.i_Score(w_Score),
+		.i_Clk(w_SnakeClk),
+		.i_Score(TEST_7SEG),
 		.o_ScoreDisplay(o_ScoreDisplay),
 		.o_SegmentSelect(o_SegmentSelect)
 	);
