@@ -34,7 +34,7 @@ module snake_scoreboard_tb ();
 	
 	reg tb_Clk = 1'b0;
 	reg [SCORE_WIDTH-1:0] tb_Score = 'b0;
-	wire [7:0] tb_ScoreDisplay;
+	wire [6:0] tb_ScoreDisplay;
 	wire [3:0] tb_SegmentSelect;
 	
 	integer test_idx;

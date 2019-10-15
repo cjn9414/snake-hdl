@@ -29,7 +29,7 @@ I have a rough idea going in to this project of how it will be implemented. Here
 ## Status
 This project is just getting started. I can't be sure when I will kick this project into full gear, as I have many active projects. I mainly wanted the notes above documented so that when I get around to pursuing this project I know what can be done. I don't anticipate this project being too much of a time commitment. I would expect it to be operational in maybe a weekend or two of work. This timeframe may change depending on how competent I am with Verilog at the time of start.
 
-I have implemented a few different modules required for this project, but with little to no testing. Consequently, this project is still in the very early stages of development.
+I have implemented a few different modules required for this project, but with little to no testing. Consequently, this project is still in early stages of development.
 
 ## Future
 As of right now, I don't expect to continue this project much further than the imagined end result. This is more of a quick and fun project!

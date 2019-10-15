@@ -24,7 +24,8 @@ module snake_device (
 	output wire [3:0] o_SegmentSelect
 );
 	parameter CLK_FREQ = 106470000;
-	parameter REFRESH_RATE = 1;
+	parameter REFRESH_RATE = 20;
+	parameter SCOREBOARD_CLK_FREQ = 4096;
 	parameter DISPLAY_WIDTH = 1440;
 	parameter DISPLAY_HEIGHT = 900;
 	parameter CELLS_WIDTH = 32;
@@ -34,6 +35,7 @@ module snake_device (
 	parameter MAX_7SEG = 16;
 	
 	wire w_SnakeClk;
+	wire w_ScoreClk;
 	wire w_GameOver;
 	wire [MAX_7SEG-1:0] w_Score;
 
@@ -42,7 +44,7 @@ module snake_device (
 	wire [(CELLS_WIDTH+1) * (CELLS_HEIGHT+1)-1:0] w_SnakeGrid;
 	wire [3:0] w_Direction;
 	
-	localparam TEST_7SEG = 'd1234;
+	localparam TEST_7SEG = { 4'd8, 4'd1, 4'd7, 4'd0 };
 		
 	clock_divider
 	#(
@@ -51,6 +53,15 @@ module snake_device (
 		.i_clk(i_Clk),
 		.o_clk(w_SnakeClk)
 	);
+			
+	clock_divider
+	#(
+		.DIV(CLK_FREQ / SCOREBOARD_CLK_FREQ)
+	) clk_to_scoreboard (
+		.i_clk(i_Clk),
+		.o_clk(w_ScoreClk)
+	);
+	
 	
 	snake_game
 	#(
@@ -102,7 +113,7 @@ module snake_device (
 	#(
 	   .SCORE_WIDTH(MAX_7SEG)
 	) score_wrapper (
-		.i_Clk(w_SnakeClk),
+		.i_Clk(w_ScoreClk),
 		.i_Score(TEST_7SEG),
 		.o_ScoreDisplay(o_ScoreDisplay),
 		.o_SegmentSelect(o_SegmentSelect)
